@@ -20,6 +20,6 @@ Q10 = "SELECT * FROM Actor WHERE (fname = 'Christin' AND lname = 'Watson');"
 
 Q11 = "SELECT name FROM Movie WHERE year BETWEEN 2003 and 2005;"
 
-Q12 = "SELECT DISTINCT year FROM Movie ORDER BY year ASC"
+Q12 = "SELECT DISTINCT year FROM Movie ORDER BY year ASC;"
 
-Q13 = "SELECT * FROM Actor WHERE ((fname = 'Christin' OR lname = 'Watson') AND gender = 'M') ORDER BY fname ASC LIMIT 10"
+Q13 = "SELECT * FROM Actor WHERE ((fname = 'Christin' OR lname = 'Watson') AND gender = 'M') ORDER BY fname ASC LIMIT 10;"
