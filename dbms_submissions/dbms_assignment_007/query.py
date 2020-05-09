@@ -50,7 +50,7 @@ Q11 = '''SELECT DISTINCT `Movie1`.name, `Movie2`.name, `Movie1`.rank, `Movie1`.y
          
 Q12 = '''SELECT `Actor`.fname, `Movie`.year, AVG(rank) AS rank
          FROM ((Actor JOIN Cast ON `Actor`.id = pid) JOIN Movie ON `Movie`.id = mid)
-         GROUP BY `Movie`.year, `Actor`.id
+         GROUP BY `Movie`.year, `Actor`.id  
          ORDER BY `Actor`.fname ASC, `Movie`.year DESC
          LIMIT 100;'''
          
