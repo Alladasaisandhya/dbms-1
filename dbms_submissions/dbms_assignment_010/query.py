@@ -1,8 +1,8 @@
 Q1 = '''SELECT P.player_id, `MatchCaptain`.team_id, P.jersey_no, P.name, P.date_of_birth, P.age
-        FROM Player AS P
-        INNER JOIN MatchCaptain ON `MatchCaptain`.captain = P.player_id 
-        LEFT JOIN GoalDetails ON `GoalDetails`.player_id = `MatchCaptain`.captain
-        WHERE goal_id IS NULL;'''
+        FROM Player AS P JOIN MatchCaptain ON captain = P.player_id
+        WHERE EXISTS(SELECT player_id FROM Player JOIN MatchCaptain ON captain = `Player`.player_id AND `Player`.player_id = P.player_id)
+        AND 
+        NOT EXISTS(SELECT goal_id FROM GoalDetails JOIN Player ON `GoalDetails`.player_id = `Player`.player_id AND `Player`.player_id = P.player_id);'''
         
 Q2 = '''SELECT team_id, COUNT(match_no) AS no_of_games
         FROM MatchTeamDetails 
@@ -59,8 +59,10 @@ Q13 = '''SELECT captain, COUNT(win_lose) AS no_of_wins
          GROUP BY captain
          ORDER BY no_of_wins DESC;'''
          
-Q = '''SELECT * FROM Player AS P
-       WHERE EXISTS(SELECT player_id FROM Player JOIN MatchCaptain ON captain = `Player`.player_id AND `Player`.player_id = P.player_id)
-       AND 
-       NOT EXISTS(SELECT goal_id FROM GoalDetails JOIN Player ON `GoalDetails`.player_id = `Player`.player_id AND `Player`.player_id = P.player_id);'''
-        
+         
+Q = '''SELECT P.player_id, `MatchCaptain`.team_id, P.jersey_no, P.name, P.date_of_birth, P.age
+        FROM Player AS P
+        INNER JOIN MatchCaptain ON `MatchCaptain`.captain = P.player_id 
+        LEFT JOIN GoalDetails ON `GoalDetails`.player_id = `MatchCaptain`.captain
+        WHERE goal_id IS NULL;'''
+         
