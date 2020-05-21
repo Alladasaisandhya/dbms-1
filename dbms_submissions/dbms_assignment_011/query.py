@@ -20,12 +20,6 @@ Q4 = '''SELECT * FROM Movie AS M
         WHERE year = 2001 AND (rank < (SELECT AVG(rank) FROM Movie WHERE year = 2001))
         ORDER BY rank DESC
         LIMIT 10;'''
-        
-Q5 = '''SELECT M.id, (SELECT COUNT(gender) FROM Actor JOIN Cast ON id = pid AND M.id = mid WHERE gender = "F") AS no_of_female_actors, 
-        (SELECT COUNT(gender) FROM Actor JOIN Cast ON id = pid AND M.id = mid WHERE gender = 'M') AS no_of_male_actors
-        FROM Movie AS M
-        ORDER BY M.id ASC
-        LIMIT 100;'''
 
 Q6 = '''SELECT DISTINCT `Cast`.pid FROM Cast
         JOIN Movie ON `Cast`.mid = `Movie`.id
@@ -39,7 +33,6 @@ Q7 = '''SELECT fname, COUNT(1) AS count
         GROUP BY fname
         HAVING COUNT > 1;'''
 
-
 Q8 = '''SELECT DISTINCT D.id, D.fname, D.lname
         FROM Director AS D
         WHERE EXISTS(SELECT `Director`.id FROM Director JOIN MovieDirector ON `Director`.id = `MovieDirector`.did AND D.id = `MovieDirector`.did
@@ -52,3 +45,10 @@ Q8 = '''SELECT DISTINCT D.id, D.fname, D.lname
                    GROUP BY `Director`.id, `MovieDirector`.mid
                    HAVING COUNT(`Cast`.role) < 100)
         GROUP BY D.id;'''
+
+Q5 = '''SELECT C.mid, (case when gender == "F" then count("F") end) AS no_of_female_actors, count(case when gender == "M" then 1 end) AS no_of_male_actors   
+        FROM Cast AS C
+        JOIN Actor ON `Actor`.id = C.pid
+        GROUP BY C.mid5
+        ORDER BY C.mid ASC
+        LIMIT 100;'''
