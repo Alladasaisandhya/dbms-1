@@ -22,8 +22,10 @@ class Student:
 
 		if key_attribute not in ("student_id", "name", "age", "score"):
 			raise InvalidField
-		
-		sql_query = read_data(f"SELECT * FROM Student WHERE {key_attribute} = {value}")
+		if key_attribute == "name":
+			sql_query = read_data(f"SELECT * FROM Student WHERE {key_attribute} = '{value}'")
+		else:
+			sql_query = read_data(f"SELECT * FROM Student WHERE {key_attribute} = {value}")
 	
 		if len(sql_query) == 0:
 			raise DoesNotExist
@@ -42,7 +44,7 @@ class Student:
 		c.execute("PRAGMA foreign_keys=on;")
 		
 		if self.student_id == None:
-			c.execute(f"INSERT INTO Student (name, age, score) values (\'{self.name}\', {self.age}, {self.score})")        
+			c.execute(f"INSERT INTO Student (name, age, score) values ('{self.name}', {self.age}, {self.score})")        
 			self.student_id = c.lastrowid
 		else:
 			c.execute(f"UPDATE Student SET name = \'{self.name}\', age = {self.age}, score = {self.score} WHERE student_id = {self.student_id}")
