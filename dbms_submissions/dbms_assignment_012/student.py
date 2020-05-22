@@ -17,15 +17,9 @@ class Student:
 	@staticmethod
 	def get(**kwargs):
 		for key, value in kwargs.items():
-			key_attribute = key
-			value = value
-
-		if key_attribute not in ("student_id", "name", "age", "score"):
-			raise InvalidField
-		if key_attribute == "name":
-			sql_query = read_data(f"SELECT * FROM Student WHERE {key_attribute} = '{value}'")
-		else:
-			sql_query = read_data(f"SELECT * FROM Student WHERE {key_attribute} = {value}")
+			if key not in ("student_id", "name", "age", "score"):
+				raise InvalidField
+		sql_query = read_data(f"SELECT * FROM Student WHERE {key} = '{value}'")
 	
 		if len(sql_query) == 0:
 			raise DoesNotExist
@@ -46,8 +40,14 @@ class Student:
 		if self.student_id == None:
 			c.execute(f"INSERT INTO Student (name, age, score) values ('{self.name}', {self.age}, {self.score})")        
 			self.student_id = c.lastrowid
+			
+		elif c.execute(f"SELECT {self.student_id} not in (SELECT student_id FROM Student) FROM Student"):
+			c.execute(f"REPLACE INTO Student (student_id, name, age, score) values ({self.student_id}, '{self.name}', {self.age}, {self.score})")        
+		
 		else:
-			c.execute(f"UPDATE Student SET name = \'{self.name}\', age = {self.age}, score = {self.score} WHERE student_id = {self.student_id}")
+			c.execute(f"UPDATE Student SET name = '{self.name}', age = {self.age}, score = {self.score} WHERE student_id = {self.student_id}")
+		
+	
 		conn.commit() 
 		conn.close()
 
