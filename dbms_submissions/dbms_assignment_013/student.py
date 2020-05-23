@@ -62,17 +62,53 @@ class Student:
     @staticmethod    
     def filter(**kwargs):
         for key, value in kwargs.items():
-            key = key
-            value = value
-        if key not in ("student_id", "name", "age", "score"):
+            keys = key
+            values = value
+            
+        x = keys.split("__")
+        
+        if x[0] not in ("student_id", "name", "age", "score"):
             raise InvalidField
-        sql_query = read_data(f"SELECT * FROM Student WHERE {key} = '{value}'")
+            
+        if keys in ("student_id", "name", "age", "score"):
+            sql_query = read_data(f"SELECT * FROM Student WHERE {keys} = '{values}'")
+        else:
+                
+            keys = keys.split("__")
+                
+            if keys[1] == "lt":
+                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} < '{values}'")
+                    
+            if keys[1] == "lte":
+                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} <= '{values}'")
+                    
+            if keys[1] == "gt":
+                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} > '{values}'")
+                    
+            if keys[1] == "gte":
+                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} >= '{values}'")
+                    
+            if keys[1] == "neq":
+                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} <> '{values}'")
+                    
+            if keys[1] == "in":
+                values = tuple(values)
+                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} in {values}")
+                
+            if keys[1] == "contains":
+                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} like '%{values}%'")
+                
+            
         if len(sql_query) == 0:
             return []
         else:
-            ans = Student(sql_query[0][1], sql_query[0][2], sql_query[0][3])
-            ans.student_id = sql_query[0][0]
-            return ans
+            x = []
+                
+            for i in sql_query:
+                ans = Student(i[1], i[2], i[3])
+                ans.student_id = i[0]
+                x.append(ans)
+            return x
 
 def write_data(sql_query):
 	import sqlite3
