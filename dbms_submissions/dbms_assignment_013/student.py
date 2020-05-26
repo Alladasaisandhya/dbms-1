@@ -77,7 +77,10 @@ class Student:
                         sql_query= f" {key} = '{value}'"
                     
                     elif keys[1] == 'in':
-                        sql_query = f"{keys[0]} {operator[keys[1]]} {tuple(value)}"
+                        if len(value) > 1:
+                            sql_query = f"{keys[0]} {operator[keys[1]]} {tuple(value)}"
+                        else:
+                            sql_query= f"{keys[0]} = '{value}'"
                     
                     elif keys[1] == 'contains':
                         sql_query = f"{keys[0]} like '%{value}%'"
@@ -88,7 +91,7 @@ class Student:
                     conditions.append(sql_query)
                     
             mul_conditions = " and ".join(tuple(conditions))       
-            sql_query = "select * from student where " + mul_conditions
+            sql_query = "SELECT * FROM Student WHERE " + mul_conditions
             
         sql_query = read_data(sql_query)
         
@@ -115,3 +118,6 @@ def read_data(sql_query):
 	ans= crsr.fetchall()
 	connection.close()
 	return ans
+	
+selected_students = Student.filter(age__in = [18])
+print(selected_students)
