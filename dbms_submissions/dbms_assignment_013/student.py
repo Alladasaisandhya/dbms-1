@@ -59,57 +59,45 @@ class Student:
     def delete(self):
         write_data(f"DELETE FROM Student WHERE student_id = {self.student_id}")
         
-    @staticmethod    
+    @staticmethod
     def filter(**kwargs):
-        for key, value in kwargs.items():
-            keys = key
-            values = value
-            
-        x = keys.split("__")
+        objects_list=[]
+        operator={'lt' : '<', 'lte' : '<=', 'gt' : '>', 'gte' : '>=', 'neq' : '!=', 'in' : 'in'}
         
-        if x[0] not in ("student_id", "name", "age", "score"):
-            raise InvalidField
+        if(len(kwargs)) >= 1:
+            conditions = []
+            for key, value in kwargs.items():
+                    
+                    keys = key
+                    keys = keys.split('__')
+                    if keys[0] not in ('name', 'age', 'score', 'student_id'):
+                            raise InvalidField 
             
-        if keys in ("student_id", "name", "age", "score"):
-            sql_query = read_data(f"SELECT * FROM Student WHERE {keys} = '{values}'")
-        else:
+                    if len(keys) == 1:
+                        sql_query= f" {key} = '{value}'"
+                    
+                    elif keys[1] == 'in':
+                        sql_query = f"{keys[0]} {operator[keys[1]]} {tuple(value)}"
+                    
+                    elif keys[1] == 'contains':
+                        sql_query = f"{keys[0]} like '%{value}%'"
+                    
+                    else:    
+                        sql_query = f"{keys[0]} {operator[keys[1]]} '{value}'"
                 
-            keys = keys.split("__")
-                
-            if keys[1] == "lt":
-                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} < '{values}'")
+                    conditions.append(sql_query)
                     
-            if keys[1] == "lte":
-                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} <= '{values}'")
-                    
-            if keys[1] == "gt":
-                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} > '{values}'")
-                    
-            if keys[1] == "gte":
-                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} >= '{values}'")
-                    
-            if keys[1] == "neq":
-                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} <> '{values}'")
-                    
-            if keys[1] == "in":
-                values = tuple(values)
-                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} in {values}")
-                
-            if keys[1] == "contains":
-                sql_query = read_data(f"SELECT * FROM Student WHERE {keys[0]} like '%{values}%'")
-                
+            mul_conditions = " and ".join(tuple(conditions))       
+            sql_query = "select * from student where " + mul_conditions
             
-        if len(sql_query) == 0:
-            return []
-        else:
-            x = []
-                
-            for i in sql_query:
-                ans = Student(i[1], i[2], i[3])
-                ans.student_id = i[0]
-                x.append(ans)
-            return x
-
+        sql_query = read_data(sql_query)
+        
+        for i in sql_query:
+            ans = Student(i[1], i[2], i[3])
+            ans.student_id = i[0]
+            objects_list.append(ans)
+        return objects_list    
+            
 def write_data(sql_query):
 	import sqlite3
 	connection = sqlite3.connect("selected_students.sqlite3")
